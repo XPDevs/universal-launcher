@@ -3,40 +3,64 @@
 <head>
   <meta charset="UTF-8">
   <title>Enable Notifications</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
       font-family: sans-serif;
       text-align: center;
       margin-top: 50px;
+      padding: 20px;
     }
     button {
-      padding: 10px 20px;
+      padding: 12px 24px;
       font-size: 16px;
       cursor: pointer;
+      border: none;
+      border-radius: 8px;
+      background-color: #007bff;
+      color: white;
+      margin-top: 20px;
     }
   </style>
 </head>
 <body>
-  <h1>Enable Notifications</h1>
-  <button onclick="requestNotification()">Enable Notifications</button>
+  <h2>Notifications</h2>
+  <p>Tap the button to allow notifications. Works on mobile and desktop.</p>
+  <button onclick="enableNotifications()">Enable Notifications</button>
 
   <script>
-    function requestNotification() {
+    function enableNotifications() {
       if (!('Notification' in window)) {
-        alert('This browser does not support notifications.');
+        alert('Your browser does not support notifications.');
         return;
       }
 
-      Notification.requestPermission().then(permission => {
-        if (permission === 'granted') {
-          new Notification('Thanks!', {
-            body: 'Notifications have been enabled.',
-            icon: 'https://cdn-icons-png.flaticon.com/512/545/545705.png'
-          });
-        } else {
-          alert('Notifications permission was denied.');
-        }
-      });
+      // Check current permission state
+      if (Notification.permission === 'granted') {
+        sendNotification();
+      } else if (Notification.permission !== 'denied') {
+        Notification.requestPermission().then(permission => {
+          if (permission === 'granted') {
+            sendNotification();
+          } else {
+            alert('You blocked notifications.');
+          }
+        });
+      } else {
+        alert('You previously denied notifications. Please enable them in your browser settings.');
+      }
+    }
+
+    function sendNotification() {
+      try {
+        new Notification("Notifications Enabled!", {
+          body: "You've successfully allowed notifications.",
+          icon: "https://cdn-icons-png.flaticon.com/512/545/545705.png"
+        });
+      } catch (error) {
+        alert("Notification failed to send. Some browsers or webviews block this.");
+        console.error(error);
+      }
     }
   </script>
 </body>
